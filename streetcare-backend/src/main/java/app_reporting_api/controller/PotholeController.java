@@ -33,21 +33,21 @@ public class PotholeController {
         return "Pothole saved!";
     }
 
-//    @PutMapping(value = "/update.pothole/{id}")
-//    public String updatePothole(@PathVariable Integer id, @RequestBody PotholeModel pothole) {
-//        PotholeModel updatePothole = potholeRepository.findById(id).get();
-//        updatePothole.setLatitude(pothole.getLatitude());
-//        updatePothole.setLongitude(pothole.getLongitude());
-//        potholeRepository.save(updatePothole);
-//        return  "Pothole Updated!";
-//    }
+    @PutMapping(value = "/update.pothole/{id}")
+    public String updatePothole(@PathVariable Integer id, @RequestBody PotholeModel pothole) {
+        PotholeModel updatePothole = potholeRepository.findById(id).get();
+        updatePothole.setLatitude(pothole.getLatitude());
+        updatePothole.setLongitude(pothole.getLongitude());
+        potholeRepository.save(updatePothole);
+        return  "Pothole Updated!";
+    }
 
-//    @DeleteMapping(value = "/delete.pothole/{id}")
-//    public String deletePothole(@PathVariable Integer id){
-//        PotholeModel deletePothole = potholeRepository.findById(id).get();
-//        potholeRepository.delete(deletePothole);
-//        return "Delete pothole with the id:" + id;
-//    }
+    @DeleteMapping(value = "/delete.pothole/{id}")
+    public String deletePothole(@PathVariable Integer id){
+        PotholeModel deletePothole = potholeRepository.findById(id).get();
+        potholeRepository.delete(deletePothole);
+        return "Delete pothole with the id:" + id;
+    }
 
 
 
