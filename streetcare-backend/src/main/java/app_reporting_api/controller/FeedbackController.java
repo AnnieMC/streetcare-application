@@ -1,14 +1,18 @@
 package app_reporting_api.controller;
 
 import app_reporting_api.model.FeedbackModel;
+import app_reporting_api.model.UserModel;
 import app_reporting_api.repository.FeedbackRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/api")
+///api/feedback
+///normal conventions
 public class FeedbackController {
 
     @Autowired
@@ -21,18 +25,26 @@ public class FeedbackController {
 
     //////////here is where the application start
 
-    @GetMapping(value = "/get.feedback")
+    @GetMapping(value = "/feedback")
     public List<FeedbackModel> getPotholes(){
         return feedbackRepository.findAll();
     }
 
-    @PostMapping(value = "post.feedback")
+    //get feedback by ID
+    @RequestMapping(value = "/feedback/{id}")
+    public ResponseEntity<FeedbackModel> getFeedbackById(@PathVariable Integer id){
+        return feedbackRepository.findById(id)
+                .map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
+    @PostMapping(value = "/feedback")
     public String saveUser(@RequestBody FeedbackModel feedback){
         feedbackRepository.save(feedback);
         return "Feedback saved!";
     }
 
-    @PutMapping(value = "/update.feedback/{id}")
+    @PutMapping(value = "/feedback/{id}")
     public String updateFeedback(@PathVariable Integer id, @RequestBody FeedbackModel feedback) {
         FeedbackModel updateFeedback = feedbackRepository.findById(id).get();
         updateFeedback.setComment(feedback.getComment());
@@ -40,7 +52,7 @@ public class FeedbackController {
         return  "Feedback Updated!";
     }
 
-    @DeleteMapping(value = "/delete.feedback/{id}")
+    @DeleteMapping(value = "/feedback/{id}")
     public String deleteFeedback(@PathVariable Integer id){
         FeedbackModel deleteFeedback = feedbackRepository.findById(id).get();
         feedbackRepository.delete(deleteFeedback);
