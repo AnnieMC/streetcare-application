@@ -1,7 +1,6 @@
 package app_reporting_api.controller;
 
 import app_reporting_api.model.FeedbackModel;
-import app_reporting_api.model.UserModel;
 import app_reporting_api.repository.FeedbackRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
