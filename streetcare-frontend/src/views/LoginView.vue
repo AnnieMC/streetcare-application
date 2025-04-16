@@ -20,7 +20,8 @@ const handleLogin = async () => {
     const response = await loginUser(form.value)
     success.value = 'Login successful!'
     // Save token or user data if needed
-    localStorage.setItem('token', response.token)
+    //localStorage.setItem('token', response.token)
+    localStorage.setItem('user', JSON.stringify(response.user))
     // Navigate to home or dashboard
     router.push('/')
   } catch (err) {

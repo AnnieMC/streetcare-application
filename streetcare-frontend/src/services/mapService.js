@@ -45,7 +45,7 @@ export const createMap = (element, options = {}) => {
   }
 
   const defaultOptions = {
-    center: { lat: 51.5074, lng: -0.1278 }, // London coordinates
+    center: { lat: 53.4721321, lng: -2.3882661 }, // Manchester coordinates
     zoom: 8,
     mapTypeId: window.google.maps.MapTypeId.ROADMAP,
     fullscreenControl: true,

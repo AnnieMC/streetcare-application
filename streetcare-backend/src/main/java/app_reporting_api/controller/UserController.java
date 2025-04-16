@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+
 //@CrossOrigin(origins = "http://localhost:5173")
 
 @RestController
@@ -24,53 +25,40 @@ public class UserController {
         this.passwordEncoder = passwordEncoder;
     }
 
-//    //setting the back end
-//    @GetMapping(value = "/test") //First endpoint
-//    public String getPage() {
-//        return "Hello, I hit my endpoint for users";
-//    }
-
-
     /// ///////here is where the application start
 
-    //get all users
+    //Get all users
     @GetMapping(value = "/user")
     public List<UserModel> getUsers() {
         return userRepository.findAll();
     }
 
-    //get user by ID
-    @RequestMapping(value = "/user/{id}")
-    public ResponseEntity<UserModel> getUserById(@PathVariable Integer id){
-        return userRepository.findById(id)
+    //Get user by ID
+    @GetMapping(value = "/user/{id}")
+    public ResponseEntity<UserModel> getUserByIdWithPotholes(@PathVariable Long id) {
+        return userRepository.findByIdWithPotholesAndFeedbacks(id)
                 .map(ResponseEntity::ok)
-        .orElseGet(() -> ResponseEntity.notFound().build());
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     //Register a new user
     @PostMapping(value = "/user")
-    public String saveUser(@RequestBody UserModel user) {
-        //Hash the password before saving
-        String encodedPassword = passwordEncoder.encode(user.getPassword());
-        user.setPassword(encodedPassword);
+    public ResponseEntity<String> saveUser(@RequestBody UserModel user) {
+        //Validate fields
+        if (user.getName() == null || user.getEmail() == null || user.getPassword() == null){
+            return ResponseEntity.badRequest().body("Name, email, and password are required");
+        }
+        //Check if the email is already registered
+        if (userRepository.findByEmail(user.getEmail()) != null){
+            return ResponseEntity.badRequest().body("Email already exists");
+        }
+
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
         userRepository.save(user);
-        return "User saved!";
+        return ResponseEntity.ok("User saved!");
     }
 
     //Login user
-//    @PostMapping(value = "/user/login")
-//    public ResponseEntity<?> loginUser(@RequestBody UserModel loginRequest) {
-//        UserModel existingUser = userRepository.findByEmail(loginRequest.getEmail());
-//
-//        if (existingUser != null && passwordEncoder.matches(loginRequest.getPassword(),
-//                existingUser.getPassword())) {
-//            //Return user data without password
-//            existingUser.setPassword(null);
-//            return ResponseEntity.ok(existingUser); // You could return a token or user info here
-//        } else {
-//            return ResponseEntity.status(401).body("Invalid email or password");
-//        }
-//    }
     @PostMapping(value = "/user/login")
     public ResponseEntity<?> loginUser(@RequestBody UserModel loginRequest) {
         UserModel existingUser = userRepository.findByEmail(loginRequest.getEmail());
@@ -92,39 +80,6 @@ public class UserController {
         }
     }
 
-
-
-    //update user
-    @PutMapping(value = "/user/{id}")
-    public String updateUser(@PathVariable Integer id, @RequestBody UserModel user) {
-        return userRepository.findById(id)
-                .map(existingUser -> {
-                    if (user.getPassword() !=null){
-                        String encodePassword = passwordEncoder.encode(user.getPassword());
-                        existingUser.setPassword(encodePassword);
-                    }
-                    if (user.getName() !=null) existingUser.setName(user.getName());
-                    if (user.getEmail() !=null) existingUser.setEmail(user.getEmail());
-
-                    userRepository.save(existingUser);
-                    return "User Updated!";
-                })
-                .orElse("User not found");
-//        UserModel updateUser = userRepository.findById(id).get();
-//        updateUser.setName(user.getName());
-//        updateUser.setEmail(user.getEmail());
-//        updateUser.setPassword(user.getPassword());
-//        userRepository.save(updateUser);
-//        return  "User Updated!";
-    }
-
-    //delete user
-    @DeleteMapping(value = "/user/{id}")
-    public String deleteUser(@PathVariable Integer id){
-        UserModel deleteUser = userRepository.findById(id).get();
-        userRepository.delete(deleteUser);
-        return "Delete user with the id:" + id;
-    }
 
 }
 

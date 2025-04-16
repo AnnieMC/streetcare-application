@@ -27,7 +27,7 @@ export default {
         const mapElement = document.getElementById('map')
         const map = createMap(mapElement)
 
-        map.addListener('click', (event) => {
+        map.addListener('click', async (event) => {
           if (!event.latLng) return
 
           const marker = new window.google.maps.Marker({
@@ -41,10 +41,40 @@ export default {
           const lat = event.latLng.lat()
           const lng = event.latLng.lng()
           console.log('Marker added at:', { lat, lng })
+
+          //Get logged-in user
+          const user = JSON.parse(localStorage.getItem('user'))
+          if (user) {
+            alert('Please log in first.')
+            return
+          }
+
+          const potholeData = {
+            userId: user.id,
+            lat: lat,
+            lng: lng,
+            description: 'Pothole reported via map click',
+          }
+
+          try {
+            const response = await fetch('http://localhost:8080/api/pothole', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify(potholeData),
+            })
+            if (!response.ok) {
+              throw new Error('Failed to report pothole')
+            }
+          } catch (error) {
+            console.error('Error reporting pothole:', error)
+            alert('Error reporting pothole:', error)
+          }
         })
       } catch (error) {
-        mapError.value = `Failed to initialize map: ${error.message}`
-        console.error('Map initialization error:', error)
+        console.error('Error initializing map:', error)
+        mapError.value = error.message
       }
     }
 

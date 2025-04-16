@@ -1,12 +1,14 @@
 package app_reporting_api.controller;
 
+import app_reporting_api.dto.PotholeRequestDTO;
 import app_reporting_api.model.PotholeModel;
+import app_reporting_api.model.UserModel;
 import app_reporting_api.repository.PotholeRepository;
+import app_reporting_api.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 
 @RestController
 @RequestMapping("/api")
@@ -14,51 +16,27 @@ public class PotholeController {
 
     @Autowired
     private PotholeRepository potholeRepository;
-
-    //setting the back end
-//    @GetMapping("/poth") //First endpoint
-//    public String getPage(){
-//        return "Hello, I hit my endpoint for potholes";
-//    }
+    @Autowired
+    private UserRepository userRepository;
 
     //////////here is where the application start
 
-    @GetMapping(value = "/pothole")
-    public List<PotholeModel> getPotholes(){
-        return potholeRepository.findAll();
-    }
-
-    //get pothole by ID
-    @RequestMapping(value = "/pothole/{id}")
-    public ResponseEntity<PotholeModel> getPotholeById(@PathVariable Integer id){
-        return potholeRepository.findById(id)
-                .map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.notFound().build());
-    }
-
+    //Add a Pothole
     @PostMapping(value = "/pothole")
-    public String saveUser(@RequestBody PotholeModel pothole){
+    public ResponseEntity<String> savePothole(@RequestBody PotholeRequestDTO request){
+        PotholeModel pothole = new PotholeModel();
+        pothole.setLatitude(request.getLatitude());
+        pothole.setLongitude(request.getLongitude());
+
+        UserModel user = userRepository.findById(request.getUserId())
+                .orElse(null);
+
+        if (user == null){
+            return ResponseEntity.badRequest().body("User not found");
+        }
+        pothole.setUser(user);
         potholeRepository.save(pothole);
-        return "Pothole saved!";
+        return  ResponseEntity.ok("Pothole saved!");
     }
-
-    @PutMapping(value = "/pothole/{id}")
-    public String updatePothole(@PathVariable Integer id, @RequestBody PotholeModel pothole) {
-        PotholeModel updatePothole = potholeRepository.findById(id).get();
-        updatePothole.setLatitude(pothole.getLatitude());
-        updatePothole.setLongitude(pothole.getLongitude());
-        potholeRepository.save(updatePothole);
-        return  "Pothole Updated!";
-    }
-
-    @DeleteMapping(value = "/pothole/{id}")
-    public String deletePothole(@PathVariable Integer id){
-        PotholeModel deletePothole = potholeRepository.findById(id).get();
-        potholeRepository.delete(deletePothole);
-        return "Delete pothole with the id:" + id;
-    }
-
-
-
 }
 

@@ -1,21 +1,17 @@
 package app_reporting_api.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
-import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
-
+import lombok.*;
 import java.time.LocalDateTime;
 
-@Getter
-@Setter
+@Data
 @Entity
 @Table(name = "feedback")
-@Data
 public class FeedbackModel {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer Id;
+    private Long Id;
 
     @Column(nullable = false, columnDefinition = "TEXT")
     private String comment;
@@ -25,6 +21,11 @@ public class FeedbackModel {
 
     @ManyToOne
     @JoinColumn(name = "user_id")
+    @JsonBackReference("user-feedback")
     private UserModel user;
 
+    @ManyToOne
+    @JoinColumn(name = "pothole_id")
+    @JsonBackReference("pothole-feedbacks")
+    private PotholeModel pothole;
 }

@@ -1,7 +1,12 @@
 package app_reporting_api.controller;
 
+import app_reporting_api.dto.FeedbackRequestDTO;
 import app_reporting_api.model.FeedbackModel;
+import app_reporting_api.model.PotholeModel;
+import app_reporting_api.model.UserModel;
 import app_reporting_api.repository.FeedbackRepository;
+import app_reporting_api.repository.PotholeRepository;
+import app_reporting_api.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -10,52 +15,36 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api")
-///api/feedback
-///normal conventions
 public class FeedbackController {
 
     @Autowired
     private FeedbackRepository feedbackRepository;
-    //setting the back end
-//    @GetMapping("/feedb") //First endpoint
-//    public String getPage(){
-//        return "Hello, I hit my endpoint for feedback";
-//    }
+    @Autowired
+    private UserRepository userRepository;
+    @Autowired
+    private PotholeRepository potholeRepository;
+
 
     //////////here is where the application start
 
-    @GetMapping(value = "/feedback")
-    public List<FeedbackModel> getPotholes(){
-        return feedbackRepository.findAll();
-    }
-
-    //get feedback by ID
-    @RequestMapping(value = "/feedback/{id}")
-    public ResponseEntity<FeedbackModel> getFeedbackById(@PathVariable Integer id){
-        return feedbackRepository.findById(id)
-                .map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.notFound().build());
-    }
-
+    //Add a feedback for the current pothole
     @PostMapping(value = "/feedback")
-    public String saveUser(@RequestBody FeedbackModel feedback){
+    public ResponseEntity<String> saveFeedback(@RequestBody FeedbackRequestDTO request) {
+        UserModel user = userRepository.findById(request.getUserId()).orElse(null);
+        PotholeModel pothole = potholeRepository.findById(request.getPotholeId()).orElse(null);
+
+        if (user == null || pothole == null) {
+            return ResponseEntity.badRequest().body("User or Pothole not found");
+        }
+
+        FeedbackModel feedback = new FeedbackModel();
+        feedback.setUser(user);
+        feedback.setPothole(pothole);
+        feedback.setComment(request.getComment());
+
         feedbackRepository.save(feedback);
-        return "Feedback saved!";
-    }
 
-    @PutMapping(value = "/feedback/{id}")
-    public String updateFeedback(@PathVariable Integer id, @RequestBody FeedbackModel feedback) {
-        FeedbackModel updateFeedback = feedbackRepository.findById(id).get();
-        updateFeedback.setComment(feedback.getComment());
-        feedbackRepository.save(updateFeedback);
-        return  "Feedback Updated!";
-    }
-
-    @DeleteMapping(value = "/feedback/{id}")
-    public String deleteFeedback(@PathVariable Integer id){
-        FeedbackModel deleteFeedback = feedbackRepository.findById(id).get();
-        feedbackRepository.delete(deleteFeedback);
-        return "Delete feedback with the id:" + id;
+        return ResponseEntity.ok("Feedback saved!");
     }
 
 }

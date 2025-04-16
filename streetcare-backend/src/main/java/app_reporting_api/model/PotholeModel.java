@@ -1,20 +1,23 @@
 package app_reporting_api.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.BatchSize;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
-@Getter
-@Setter
+
+@Data
 @Entity
 @Table(name = "potholes")
-@Data
 public class PotholeModel {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
 
     @Column(nullable = false, precision = 10 , scale = 8)
     private BigDecimal latitude;
@@ -27,5 +30,11 @@ public class PotholeModel {
 
     @ManyToOne
     @JoinColumn(name = "user_id")
+    @JsonBackReference("user-potholes")
     private UserModel user;
+
+    @OneToMany(mappedBy = "pothole", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonManagedReference("pothole-feedbacks")
+    @BatchSize(size = 10)
+    private List<FeedbackModel> feedbacks;
 }

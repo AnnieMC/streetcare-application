@@ -43,12 +43,12 @@ export const loginUser = async (credentials) => {
 }
 
 // Log out user
-export const logoutUser = async () => {
-  try {
-    const response = await api.post('/logout')
-    return response.data
-  } catch (error) {
-    console.error('Error logging out:', error)
-    throw error
-  }
-}
+// export const logoutUser = async () => {
+//   try {
+//     const response = await api.post('/logout')
+//     return response.data
+//   } catch (error) {
+//     console.error('Error logging out:', error)
+//     throw error
+//   }
+// }
