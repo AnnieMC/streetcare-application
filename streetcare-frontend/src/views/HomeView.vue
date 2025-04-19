@@ -1,13 +1,15 @@
 <script>
 import { ref, onMounted } from 'vue'
-import { fetchUsers } from '@/services/authService'
+import { fetchUsers, getCurrentUser } from '@/services/authService'
 import { createMap, loadGoogleMaps } from '@/services/mapService'
+import router from '@/router'
 
 export default {
   setup() {
     const users = ref([])
     const mapError = ref(null)
     const markers = ref([])
+    const userInput = ref('')
 
     const loadUsers = async () => {
       try {
@@ -30,6 +32,14 @@ export default {
         map.addListener('click', async (event) => {
           if (!event.latLng) return
 
+          const user = getCurrentUser()
+          console.log('Current user:', user)
+          if (!user) {
+            alert('Please log in first. Redirecting you now...')
+            router.push('/login')
+            return
+          }
+
           const marker = new window.google.maps.Marker({
             position: event.latLng,
             map: map,
@@ -42,18 +52,11 @@ export default {
           const lng = event.latLng.lng()
           console.log('Marker added at:', { lat, lng })
 
-          //Get logged-in user
-          const user = JSON.parse(localStorage.getItem('user'))
-          if (user) {
-            alert('Please log in first.')
-            return
-          }
-
           const potholeData = {
             userId: user.id,
-            lat: lat,
-            lng: lng,
-            description: 'Pothole reported via map click',
+            latitude: lat,
+            longitude: lng,
+            ///description: 'Pothole reported via map click',
           }
 
           try {
@@ -64,9 +67,13 @@ export default {
               },
               body: JSON.stringify(potholeData),
             })
+
             if (!response.ok) {
               throw new Error('Failed to report pothole')
             }
+            console.log('Sending payload:', potholeData)
+
+            alert('Pothole reported successfully!')
           } catch (error) {
             console.error('Error reporting pothole:', error)
             alert('Error reporting pothole:', error)
@@ -78,12 +85,19 @@ export default {
       }
     }
 
+    const logout = () => {
+      localStorage.removeItem('user') // or use your auth service method
+      router.push('/login')
+    }
+
     onMounted(() => {
       loadUsers()
       initMap()
+      const user = getCurrentUser()
+      console.log('Current user after mounted:', user)
     })
 
-    return { users, mapError }
+    return { users, mapError, userInput, logout }
   },
 }
 </script>
@@ -97,5 +111,34 @@ export default {
 
     <!-- Google Map container-->
     <div id="map" style="height: 400px; width: 100%; margin-top: 20px"></div>
+  </div>
+
+  <!-- New: Text Input -->
+  <div style="margin-top: 20px">
+    <label for="textInput">Enter Description:</label>
+    <input
+      v-model="userInput"
+      id="textInput"
+      type="text"
+      placeholder="Write something..."
+      style="margin-left: 10px; padding: 80px"
+    />
+  </div>
+
+  <!-- New: Log Out Button -->
+  <div style="margin-top: 20px">
+    <button
+      @click="logout"
+      style="
+        padding: 8px 16px;
+        background-color: #f44336;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+      "
+    >
+      Log Out
+    </button>
   </div>
 </template>

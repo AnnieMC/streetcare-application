@@ -17,11 +17,13 @@ const handleLogin = async () => {
   error.value = ''
   success.value = ''
   try {
-    const response = await loginUser(form.value)
+    //const response = await loginUser(form.value)
+    await loginUser(form.value)
+
     success.value = 'Login successful!'
     // Save token or user data if needed
     //localStorage.setItem('token', response.token)
-    localStorage.setItem('user', JSON.stringify(response.user))
+    //localStorage.setItem('user', JSON.stringify(response.user))
     // Navigate to home or dashboard
     router.push('/')
   } catch (err) {

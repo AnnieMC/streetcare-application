@@ -24,12 +24,11 @@ public class SecurityConfig {
         http
                 .cors(cors -> cors.configurationSource(request -> new CorsConfiguration().applyPermitDefaultValues()))
                 .csrf(csrf -> csrf.disable()) // Disable CSRF for APIs
-                .authorizeHttpRequests(auth -> auth.anyRequest().permitAll());
+                .authorizeHttpRequests(auth -> auth.anyRequest().permitAll()
+                );
 //                (HttpMethod.GET, "/api/user", "/api/user/{id}", "/api/pothole", "/api/pothole/{id}").permitAll()
 //                        .requestMatchers(HttpMethod.POST, "/api/user/login", "/api/user", "/api/pothole", "/api/feedback").permitAll()
                         //.anyRequest().authenticated()
-
-
 
         return http.build();
     }

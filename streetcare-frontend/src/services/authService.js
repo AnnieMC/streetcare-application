@@ -35,6 +35,24 @@ export const createUser = async (userData) => {
 export const loginUser = async (credentials) => {
   try {
     const response = await api.post('/user/login', credentials)
+    console.log('Login response:', response)
+    if (response.data) {
+      // Save user to localStorage
+      localStorage.setItem('user', JSON.stringify(response.data))
+      console.log('User saved to localStorage:', JSON.stringify(response.data))
+
+      // Immediately try to get the user after saving it to localStorage
+      const userFromStorage = localStorage.getItem('user')
+      console.log('User from localStorage immediately after save:', userFromStorage)
+
+      // Also check if JSON.parse works properly
+      try {
+        const parsedUser = JSON.parse(userFromStorage)
+        console.log('Parsed user:', parsedUser)
+      } catch (error) {
+        console.error('Error parsing user data:', error)
+      }
+    }
     return response.data
   } catch (error) {
     console.error('Error logging in:', error)
@@ -42,6 +60,25 @@ export const loginUser = async (credentials) => {
   }
 }
 
+//get current user
+export const getCurrentUser = () => {
+  const userStr = localStorage.getItem('user')
+  console.log('getCurrentUser - user from localStorage:', userStr)
+
+  if (!userStr || userStr === 'undefined') {
+    console.log('No user found or user is undifened')
+    return null
+  }
+  // Check if userStr is a valid JSON string
+  try {
+    const parsedUser = JSON.parse(userStr)
+    console.log('Parsed user in getCurrentUser:', parsedUser)
+    return parsedUser
+  } catch (error) {
+    console.error('Error parsing user data:', error)
+    return null
+  }
+}
 // Log out user
 // export const logoutUser = async () => {
 //   try {

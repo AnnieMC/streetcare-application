@@ -8,7 +8,7 @@ import org.springframework.data.repository.query.Param;
 import java.util.Optional;
 
 public interface UserRepository extends JpaRepository <UserModel, Long> {
-    UserModel findByEmail(String Email);
+    UserModel findByEmail(String email);
     @Query("SELECT DISTINCT u FROM UserModel u LEFT JOIN FETCH u.potholes WHERE u.id = :id")
     Optional<UserModel> findByIdWithPotholesAndFeedbacks(@Param("id") Long id);
 }

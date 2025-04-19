@@ -11,7 +11,9 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 
-@Data
+//@Data
+@Getter
+@Setter
 @Entity
 @Table(name = "potholes")
 public class PotholeModel {

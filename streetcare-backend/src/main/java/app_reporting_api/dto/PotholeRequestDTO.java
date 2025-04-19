@@ -5,7 +5,9 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
-@Data
+//@Data
+@Getter
+@Setter
 public class PotholeRequestDTO {
     private Long id;
     private BigDecimal latitude;

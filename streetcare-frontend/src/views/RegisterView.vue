@@ -19,8 +19,22 @@ const handleRegister = async () => {
     success.value = 'Account created successfully!'
     form.value = { name: '', email: '', password: '' }
   } catch (err) {
-    error.value = 'Registration failed. Please try again.'
-    console.error(err)
+    // error.value = 'Registration failed. Please try again.'
+    // console.error(err)
+    if (err.response && err.response.data) {
+      const serverErrors = err.response.data
+      // If it's a string (like "Server Error: ...")
+      if (typeof serverErrors === 'string') {
+        error.value = serverErrors
+      }
+      // If it's an object with field errors
+      else if (typeof serverErrors === 'object') {
+        error.value = Object.values(serverErrors).join(', ')
+      }
+    } else {
+      error.value = 'Registration failed. Please try again.'
+    }
+    //console.error(err)
   }
 }
 </script>

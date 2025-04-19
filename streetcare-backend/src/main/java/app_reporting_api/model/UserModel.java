@@ -7,9 +7,12 @@ import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
-@Data
+//@Data
+@Getter
+@Setter
 @Entity
 @Table(name = "users")
 
@@ -24,10 +27,11 @@ public class UserModel {
     @Column(nullable = false, length = 100)
     private String email;
 
-    @Size(min = 8, message = "Password must be at least 8 characters long")
-    @JsonIgnore
+    //@Size(min = 8, message = "Password must be at least 8 characters long")
+    //@JsonIgnore
     @Column(nullable = false, length = 255)
-    @Pattern(regexp = "^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$", message = "Password must contain an uppercase letter, a lowercase letter, a number, and a special character.")
+    //@Pattern(regexp = "^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$",
+    //       message = "Password must contain an uppercase letter, a lowercase letter, a number, and a special character.")
     private String password;
 
     @Column(name = "registration_date", insertable = false, updatable = false)
@@ -35,6 +39,6 @@ public class UserModel {
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonManagedReference ("user-potholes")
-    private List<PotholeModel> potholes;
+    private List<PotholeModel> potholes = new ArrayList<>();
 
 }
