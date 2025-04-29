@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 
@@ -49,6 +50,20 @@ public class PotholeController {
 
         return ResponseEntity.ok(response);
     }
+
+    // Get All Potholes
+    @GetMapping(value = "/pothole")
+    public ResponseEntity<List<PotholeModel>> getAllPotholes() {
+        try {
+            List<PotholeModel> potholes = potholeRepository.findAll();
+            return ResponseEntity.ok(potholes);
+        } catch (Exception e) {
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("error", "Error fetching potholes");
+            return ResponseEntity.status(500).body(null);
+        }
+    }
+
 
 }
 
