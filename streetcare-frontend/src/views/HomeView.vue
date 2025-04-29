@@ -10,6 +10,7 @@ export default {
     const mapError = ref(null)
     const markers = ref([])
     const userInput = ref('')
+    const potholeId = ref(null)
 
     const loadUsers = async () => {
       try {
@@ -36,7 +37,7 @@ export default {
           console.log('Current user:', user)
           if (!user) {
             alert('Please log in first. Redirecting you now...')
-            router.push('/login')
+            router.push('/')
             return
           }
 
@@ -56,7 +57,6 @@ export default {
             userId: user.id,
             latitude: lat,
             longitude: lng,
-            ///description: 'Pothole reported via map click',
           }
 
           try {
@@ -73,6 +73,10 @@ export default {
             }
             console.log('Sending payload:', potholeData)
 
+            const result = await response.json() // Assuming server returns { id: ... }
+            potholeId.value = result.id // Store the newly created pothole ID here
+            console.log('New Pothole ID saved:', potholeId.value)
+
             alert('Pothole reported successfully!')
           } catch (error) {
             console.error('Error reporting pothole:', error)
@@ -85,9 +89,83 @@ export default {
       }
     }
 
-    const logout = () => {
-      localStorage.removeItem('user') // or use your auth service method
-      router.push('/login')
+    const saveFeedback = async () => {
+      console.log('Pothole ID:', potholeId.value)
+      try {
+        const user = getCurrentUser()
+        console.log('Current user:', user) //is the user returned?
+        if (!user) {
+          alert('Please log in first. Redirecting you now...')
+          router.push('/login')
+          return
+        }
+
+        if (!userInput.value.trim()) {
+          alert('Please enter feedback before submitting')
+          return
+        }
+
+        const feedbackData = {
+          userId: user.id,
+          potholeId: potholeId.value,
+          comment: userInput.value,
+        }
+
+        const response = await fetch('http://localhost:8080/api/feedback', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(feedbackData),
+        })
+
+        if (!response.ok) {
+          throw new Error('Failed to submit feedback')
+        }
+
+        alert('Feedback submitted successfully!')
+        userInput.value = '' // Clear the input field after submission
+      } catch (error) {
+        console.error('Error submitting feedback:', error)
+        alert('Error submitting feedback:', error.message)
+      }
+    }
+
+    // const logout = () => {
+    //   localStorage.removeItem('user') // or use your auth service method
+    //   router.push('/login')
+    // }
+
+    const logout = async () => {
+      try {
+        // Check if the user is logged in first
+        if (!localStorage.getItem('user')) {
+          alert('No user is logged in')
+          return // Exit if no user is logged in
+        }
+
+        // Send logout request to the backend
+        const response = await fetch('http://localhost:8080/api/user/logout', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        })
+
+        if (!response.ok) {
+          throw new Error('Failed to log out')
+        }
+
+        // After successful logout, clear the user data from localStorage
+        localStorage.removeItem('user')
+
+        // Redirect to the login page
+        router.push('/login')
+        alert('User logged out successfully')
+      } catch (error) {
+        console.error('Error logging out:', error)
+        alert('Error logging out:', error.message)
+      }
     }
 
     onMounted(() => {
@@ -97,48 +175,53 @@ export default {
       console.log('Current user after mounted:', user)
     })
 
-    return { users, mapError, userInput, logout }
+    return { users, mapError, userInput, potholeId, saveFeedback, logout }
   },
 }
 </script>
 
 <template>
   <div>
-    <h1>User List</h1>
-    <ul>
-      <li v-for="user in users" :key="user.id">{{ user.name }} - {{ user.email }}</li>
-    </ul>
+    <!--Root div wrapping everything -->
+    <div>
+      <h1>User List</h1>
+      <ul>
+        <li v-for="user in users" :key="user.id">{{ user.name }} - {{ user.email }}</li>
+      </ul>
 
-    <!-- Google Map container-->
-    <div id="map" style="height: 400px; width: 100%; margin-top: 20px"></div>
-  </div>
+      <!-- Google Map container -->
+      <div id="map" style="height: 400px; width: 100%; margin-top: 20px"></div>
+    </div>
 
-  <!-- New: Text Input -->
-  <div style="margin-top: 20px">
-    <label for="textInput">Enter Description:</label>
-    <input
-      v-model="userInput"
-      id="textInput"
-      type="text"
-      placeholder="Write something..."
-      style="margin-left: 10px; padding: 80px"
-    />
-  </div>
+    <!-- Text Input -->
+    <div style="margin-top: 20px">
+      <label for="textInput">Enter Description:</label>
+      <input
+        v-model="userInput"
+        id="textInput"
+        type="text"
+        placeholder="Write something..."
+        style="margin-left: 10px; padding: 18px"
+      />
+      <button @click="saveFeedback" style="margin-left: 10px">Submit Feedback</button>
+    </div>
 
-  <!-- New: Log Out Button -->
-  <div style="margin-top: 20px">
-    <button
-      @click="logout"
-      style="
-        padding: 8px 16px;
-        background-color: #f44336;
-        color: white;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
-      "
-    >
-      Log Out
-    </button>
+    <!-- Log Out Button -->
+    <div style="margin-top: 20px">
+      <button
+        @click="logout"
+        style="
+          padding: 8px 16px;
+          background-color: #f44336;
+          color: white;
+          border: none;
+          border-radius: 4px;
+          cursor: pointer;
+        "
+      >
+        Log Out
+      </button>
+    </div>
   </div>
+  <!--Closing Root div -->
 </template>

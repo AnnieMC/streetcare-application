@@ -17,14 +17,9 @@ const handleLogin = async () => {
   error.value = ''
   success.value = ''
   try {
-    //const response = await loginUser(form.value)
     await loginUser(form.value)
 
     success.value = 'Login successful!'
-    // Save token or user data if needed
-    //localStorage.setItem('token', response.token)
-    //localStorage.setItem('user', JSON.stringify(response.user))
-    // Navigate to home or dashboard
     router.push('/')
   } catch (err) {
     error.value = 'Invalid email or password.'
@@ -55,5 +50,12 @@ const handleLogin = async () => {
       <p v-if="error" class="text-red-500 mt-4">{{ error }}</p>
       <p v-if="success" class="text-green-500 mt-4">{{ success }}</p>
     </form>
+
+    <div class="mt-4 text-center">
+      <p>
+        Don't have an account?
+        <RouterLink to="/register" class="text-blue-600">Create one</RouterLink>
+      </p>
+    </div>
   </div>
 </template>

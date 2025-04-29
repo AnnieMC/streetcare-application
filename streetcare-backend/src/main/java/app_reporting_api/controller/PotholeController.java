@@ -9,6 +9,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
+import java.util.Map;
+
 
 @RestController
 @RequestMapping("/api")
@@ -23,7 +26,7 @@ public class PotholeController {
 
     //Add a Pothole
     @PostMapping(value = "/pothole")
-    public ResponseEntity<String> savePothole(@RequestBody PotholeRequestDTO request){
+    public ResponseEntity<Map<String, Object>> savePothole(@RequestBody PotholeRequestDTO request) {
         PotholeModel pothole = new PotholeModel();
         pothole.setLatitude(request.getLatitude());
         pothole.setLongitude(request.getLongitude());
@@ -31,12 +34,21 @@ public class PotholeController {
         UserModel user = userRepository.findById(request.getUserId())
                 .orElse(null);
 
-        if (user == null){
-            return ResponseEntity.badRequest().body("User not found");
+        if (user == null) {
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("error", "User not found");
+            return ResponseEntity.badRequest().body(errorResponse);
         }
+
         pothole.setUser(user);
-        potholeRepository.save(pothole);
-        return  ResponseEntity.ok("Pothole saved!");
+        potholeRepository.save(pothole); // <-- ID will be generated after save!
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("message", "Pothole saved!");
+        response.put("id", pothole.getId()); // <-- Get the generated ID
+
+        return ResponseEntity.ok(response);
     }
+
 }
 

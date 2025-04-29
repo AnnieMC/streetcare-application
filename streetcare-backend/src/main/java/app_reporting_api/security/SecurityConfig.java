@@ -22,13 +22,32 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
+
+//                .cors(cors -> cors.configurationSource(request -> new CorsConfiguration().applyPermitDefaultValues()))
+//                .csrf(csrf -> csrf.disable()) // Disable CSRF for APIs
+//                .authorizeHttpRequests(auth -> auth
+//                        // Public endpoints
+//                        .requestMatchers(HttpMethod.POST, "/api/user", "/api/user/login").permitAll()
+//
+//                        // Protected endpoints
+//                        .requestMatchers(HttpMethod.GET, "/api/user", "/api/user/{id}").authenticated()
+//                        .requestMatchers(HttpMethod.POST, "/api/user/logout").authenticated()
+//                        .requestMatchers(HttpMethod.POST, "/api/pothole").authenticated()
+//                        .requestMatchers(HttpMethod.POST, "/api/feedback").authenticated()
+//
+//                        // Any other request must be authenticated
+//                        .anyRequest().authenticated()
+//                );
+
                 .cors(cors -> cors.configurationSource(request -> new CorsConfiguration().applyPermitDefaultValues()))
                 .csrf(csrf -> csrf.disable()) // Disable CSRF for APIs
                 .authorizeHttpRequests(auth -> auth.anyRequest().permitAll()
                 );
+
 //                (HttpMethod.GET, "/api/user", "/api/user/{id}", "/api/pothole", "/api/pothole/{id}").permitAll()
 //                        .requestMatchers(HttpMethod.POST, "/api/user/login", "/api/user", "/api/pothole", "/api/feedback").permitAll()
-                        //.anyRequest().authenticated()
+//                        .anyRequest().authenticated()
+
 
         return http.build();
     }

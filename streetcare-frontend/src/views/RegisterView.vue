@@ -69,5 +69,11 @@ const handleRegister = async () => {
       <p v-if="error" class="text-red-500 mt-4 text-sm">{{ error }}</p>
       <p v-if="success" class="text-green-500 mt-4 text-sm">{{ success }}</p>
     </form>
+
+    <div class="mt-4 text-center">
+      <p>
+        Already have an account? <RouterLink to="/login" class="text-blue-600">Log In</RouterLink>
+      </p>
+    </div>
   </div>
 </template>
