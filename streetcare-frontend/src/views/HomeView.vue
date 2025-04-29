@@ -1,4 +1,4 @@
-<script>
+<!-- <script>
 import { ref, onMounted } from 'vue'
 import { fetchUsers, getCurrentUser } from '@/services/authService'
 import { createMap, loadGoogleMaps } from '@/services/mapService'
@@ -11,6 +11,8 @@ export default {
     const markers = ref([])
     const userInput = ref('')
     const potholeId = ref(null)
+    const map = ref(null)
+    const postcode = ref('')
 
     const loadUsers = async () => {
       try {
@@ -28,16 +30,17 @@ export default {
 
         await loadGoogleMaps()
         const mapElement = document.getElementById('map')
-        const map = createMap(mapElement)
+        //const map = createMap(mapElement)
+        map.value = createMap(mapElement)
 
-        map.addListener('click', async (event) => {
+        map.value.addListener('click', async (event) => {
           if (!event.latLng) return
 
           const user = getCurrentUser()
           console.log('Current user:', user)
           if (!user) {
             alert('Please log in first. Redirecting you now...')
-            router.push('/')
+            router.push('/login')
             return
           }
 
@@ -73,8 +76,8 @@ export default {
             }
             console.log('Sending payload:', potholeData)
 
-            const result = await response.json() // Assuming server returns { id: ... }
-            potholeId.value = result.id // Store the newly created pothole ID here
+            const result = await response.json()
+            potholeId.value = result.id
             console.log('New Pothole ID saved:', potholeId.value)
 
             alert('Pothole reported successfully!')
@@ -131,10 +134,21 @@ export default {
       }
     }
 
-    // const logout = () => {
-    //   localStorage.removeItem('user') // or use your auth service method
-    //   router.push('/login')
-    // }
+    const findPostcodeArea = async () => {
+      if (!postcode.value || !map.value) return
+
+      const geocoder = new window.google.maps.Geocoder()
+
+      geocoder.geocode({ address: postcode.value }, (results, status) => {
+        if (status === 'OK') {
+          const location = results[0].geometry.location
+          map.value.setCenter(location)
+          map.value.setZoom(14)
+        } else {
+          alert('Postcode not found.')
+        }
+      })
+    }
 
     const logout = async () => {
       try {
@@ -175,26 +189,43 @@ export default {
       console.log('Current user after mounted:', user)
     })
 
-    return { users, mapError, userInput, potholeId, saveFeedback, logout }
+    return {
+      users,
+      mapError,
+      userInput,
+      potholeId,
+      saveFeedback,
+      logout,
+      findPostcodeArea,
+      postcode,
+    }
   },
 }
-</script>
+</script> -->
 
-<template>
-  <div>
-    <!--Root div wrapping everything -->
-    <div>
+<!-- <template>
+  <div> -->
+<!--Root div wrapping everything -->
+
+<!-- Postcode Input -->
+<!-- <div style="margin-top: 20px">
+      <label for="postcode">Enter Postcode:</label>
+      <input v-model="postcode" type="text" id="postcode" placeholder="E.g. M15 6BH" />
+      <button @click="findPostcodeArea">Submit</button>
+    </div> -->
+
+<!-- <div>
       <h1>User List</h1>
       <ul>
         <li v-for="user in users" :key="user.id">{{ user.name }} - {{ user.email }}</li>
-      </ul>
+      </ul> -->
 
-      <!-- Google Map container -->
-      <div id="map" style="height: 400px; width: 100%; margin-top: 20px"></div>
-    </div>
+<!-- Google Map container -->
+<!-- <div id="map" style="height: 400px; width: 100%; margin-top: 20px"></div>
+    </div> -->
 
-    <!-- Text Input -->
-    <div style="margin-top: 20px">
+<!-- Text Input -->
+<!-- <div style="margin-top: 20px">
       <label for="textInput">Enter Description:</label>
       <input
         v-model="userInput"
@@ -204,10 +235,10 @@ export default {
         style="margin-left: 10px; padding: 18px"
       />
       <button @click="saveFeedback" style="margin-left: 10px">Submit Feedback</button>
-    </div>
+    </div> -->
 
-    <!-- Log Out Button -->
-    <div style="margin-top: 20px">
+<!-- Log Out Button -->
+<!-- <div style="margin-top: 20px">
       <button
         @click="logout"
         style="
@@ -222,6 +253,39 @@ export default {
         Log Out
       </button>
     </div>
+  </div> -->
+<!--Closing Root div -->
+<!-- </template> -->
+
+<script setup>
+import { onMounted } from 'vue'
+import { loadGoogleMaps, createMap } from '@/services/mapService'
+import { getCurrentUser } from '@/services/authService'
+import router from '@/router'
+
+onMounted(async () => {
+  const mapElement = document.getElementById('map')
+  if (!mapElement) return
+
+  await loadGoogleMaps()
+  const map = createMap(mapElement)
+
+  map.addListener('click', () => {
+    const user = getCurrentUser()
+    console.log('User from getCurrentUser:', user)
+
+    if (!user) {
+      alert('Please log in first. Redirecting...')
+      router.push('/login')
+      return
+    }
+  })
+})
+</script>
+
+<template>
+  <div>
+    <h1>Welcome to the Pothole Map</h1>
+    <div id="map" style="height: 500px"></div>
   </div>
-  <!--Closing Root div -->
 </template>

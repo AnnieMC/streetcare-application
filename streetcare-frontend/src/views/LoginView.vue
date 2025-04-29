@@ -20,7 +20,7 @@ const handleLogin = async () => {
     await loginUser(form.value)
 
     success.value = 'Login successful!'
-    router.push('/')
+    router.push('/report')
   } catch (err) {
     error.value = 'Invalid email or password.'
     console.error(err)

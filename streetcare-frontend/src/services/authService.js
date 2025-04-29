@@ -61,21 +61,16 @@ export const loginUser = async (credentials) => {
 }
 
 //get current user
-export const getCurrentUser = () => {
-  const userStr = localStorage.getItem('user')
-  console.log('getCurrentUser - user from localStorage:', userStr)
+export function getCurrentUser() {
+  const userJson = localStorage.getItem('user')
+  if (!userJson) return null
 
-  if (!userStr || userStr === 'undefined') {
-    console.log('No user found or user is undifened')
-    return null
-  }
-  // Check if userStr is a valid JSON string
   try {
-    const parsedUser = JSON.parse(userStr)
-    console.log('Parsed user in getCurrentUser:', parsedUser)
-    return parsedUser
-  } catch (error) {
-    console.error('Error parsing user data:', error)
+    const parsed = JSON.parse(userJson)
+    console.log('Parsed user in getCurrentUser:', parsed)
+    return parsed
+  } catch (err) {
+    console.error('Error parsing user from localStorage:', err)
     return null
   }
 }

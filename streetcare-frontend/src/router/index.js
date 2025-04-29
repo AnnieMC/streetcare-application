@@ -18,6 +18,14 @@ const router = createRouter({
       name: 'home',
       component: () => import('../views/HomeView.vue'),
     },
+    {
+      path: '/report',
+      name: 'report',
+      component: () => import('../views/PrivateHomeView.vue'),
+      meta: {
+        requiresAuth: true,
+      },
+    },
   ],
 })
 
