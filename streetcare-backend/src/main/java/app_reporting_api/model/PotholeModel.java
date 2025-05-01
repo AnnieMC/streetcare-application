@@ -10,10 +10,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
-
-//@Data
-@Getter
-@Setter
+@Data
 @Entity
 @Table(name = "potholes")
 public class PotholeModel {

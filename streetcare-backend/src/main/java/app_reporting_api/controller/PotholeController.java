@@ -7,6 +7,7 @@ import app_reporting_api.repository.PotholeRepository;
 import app_reporting_api.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -15,35 +16,44 @@ import java.util.Map;
 
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api") // Base path for all endpoints in this controller.
 public class PotholeController {
 
+    // Injects dependencies via constructor
+    private final PotholeRepository potholeRepository;
+    private final UserRepository userRepository;
+
     @Autowired
-    private PotholeRepository potholeRepository;
-    @Autowired
-    private UserRepository userRepository;
+    public PotholeController(PotholeRepository potholeRepository, UserRepository userRepository) {
+        this.potholeRepository = potholeRepository;
+        this.userRepository = userRepository;
+    }
 
     //////////here is where the application start
 
     //Add a Pothole
     @PostMapping(value = "/pothole")
+    //Create a new potholeModel and save it to the database
     public ResponseEntity<Map<String, Object>> savePothole(@RequestBody PotholeRequestDTO request) {
         PotholeModel pothole = new PotholeModel();
         pothole.setLatitude(request.getLatitude());
         pothole.setLongitude(request.getLongitude());
 
+        //Find the user by ID who reported the pothole
         UserModel user = userRepository.findById(request.getUserId())
                 .orElse(null);
 
-        if (user == null) {
+        if (user == null) { //Return an error response if the user is not found
             Map<String, Object> errorResponse = new HashMap<>();
             errorResponse.put("error", "User not found");
             return ResponseEntity.badRequest().body(errorResponse);
         }
 
+        //Associate the pothole with the user
         pothole.setUser(user);
-        potholeRepository.save(pothole); // <-- ID will be generated after save!
+        potholeRepository.save(pothole); //ID will be generated after save!
 
+        //Return a success response with the generated ID
         Map<String, Object> response = new HashMap<>();
         response.put("message", "Pothole saved!");
         response.put("id", pothole.getId()); // <-- Get the generated ID
@@ -51,13 +61,15 @@ public class PotholeController {
         return ResponseEntity.ok(response);
     }
 
-    // Get All Potholes
+    //Get a list of all reported potholes
     @GetMapping(value = "/pothole")
     public ResponseEntity<List<PotholeModel>> getAllPotholes() {
         try {
+            //Fetches all potholes from the database
             List<PotholeModel> potholes = potholeRepository.findAll();
             return ResponseEntity.ok(potholes);
         } catch (Exception e) {
+            //Return an error response if something goes wrong
             Map<String, Object> errorResponse = new HashMap<>();
             errorResponse.put("error", "Error fetching potholes");
             return ResponseEntity.status(500).body(null);

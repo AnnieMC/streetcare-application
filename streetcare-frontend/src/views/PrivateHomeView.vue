@@ -123,20 +123,95 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div>
+  <div class="welcome-container">
     <h2>Welcome, {{ user?.name }}</h2>
 
-    <form @submit.prevent="findPostcodeArea">
-      <input v-model="postcode" placeholder="Enter postcode" />
-      <button>Search</button>
+    <form @submit.prevent="findPostcodeArea" class="search-form">
+      <div class="form-group">
+        <input v-model="postcode" placeholder="Enter postcode" class="input-field" />
+      </div>
+
+      <button type="submit" class="submit-button">Search</button>
     </form>
 
-    <textarea v-model="feedback" placeholder="Leave feedback"></textarea>
+    <div class="form-group">
+      <textarea v-model="feedback" placeholder="Leave feedback" class="textarea-field"></textarea>
+    </div>
 
-    <button @click="saveFeedback">Submit Feedback</button>
+    <button @click="saveFeedback" class="submit-button">Submit Feedback</button>
 
-    <div id="map" style="height: 500px"></div>
+    <div id="map" class="map-container"></div>
 
-    <button @click="logout">Logout</button>
+    <button @click="logout" class="logout-button">Logout</button>
   </div>
 </template>
+
+<style>
+.welcome-container {
+  max-width: 600px;
+  margin: 2em auto;
+  padding: 2em;
+  background-color: white;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  text-align: left;
+}
+
+.welcome-container h2 {
+  text-align: center;
+  margin-bottom: 1.5em;
+}
+
+.search-form {
+  margin-bottom: 1.5em;
+}
+
+.form-group {
+  margin-bottom: 1.5em;
+}
+
+.input-field,
+.textarea-field {
+  width: 100%;
+  padding: 0.75em;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 1em;
+}
+
+.input-field::placeholder,
+.textarea-field::placeholder {
+  color: #888;
+}
+
+.submit-button,
+.logout-button {
+  width: 100%;
+  padding: 0.75em;
+  background-color: #2f855a;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  font-weight: bold;
+  cursor: pointer;
+  margin-bottom: 1em;
+}
+
+.submit-button:hover,
+.logout-button:hover {
+  background-color: #276749;
+}
+
+.map-container {
+  height: 500px;
+  margin-bottom: 1.5em;
+}
+
+.logout-button {
+  background-color: #e53e3e;
+}
+
+.logout-button:hover {
+  background-color: #c53030;
+}
+</style>

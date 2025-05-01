@@ -5,9 +5,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDateTime;
 
-//@Data
-@Getter
-@Setter
+@Data
 @Entity
 @Table(name = "feedback")
 public class FeedbackModel {

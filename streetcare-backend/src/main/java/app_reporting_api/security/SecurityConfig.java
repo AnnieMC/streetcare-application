@@ -5,8 +5,12 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
 
@@ -23,7 +27,13 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
 
-//                .cors(cors -> cors.configurationSource(request -> new CorsConfiguration().applyPermitDefaultValues()))
+                .cors(cors -> cors.configurationSource(request -> new CorsConfiguration().applyPermitDefaultValues()))
+                .csrf(csrf -> csrf.disable()) // Disable CSRF for APIs
+                .authorizeHttpRequests(auth -> auth.anyRequest().permitAll()
+                );
+
+        //////////// Trying to add specific endpoints to protect the request through the API
+//              .cors(cors -> cors.configurationSource(request -> new CorsConfiguration().applyPermitDefaultValues()))
 //                .csrf(csrf -> csrf.disable()) // Disable CSRF for APIs
 //                .authorizeHttpRequests(auth -> auth
 //                        // Public endpoints
@@ -38,16 +48,6 @@ public class SecurityConfig {
 //                        // Any other request must be authenticated
 //                        .anyRequest().authenticated()
 //                );
-
-                .cors(cors -> cors.configurationSource(request -> new CorsConfiguration().applyPermitDefaultValues()))
-                .csrf(csrf -> csrf.disable()) // Disable CSRF for APIs
-                .authorizeHttpRequests(auth -> auth.anyRequest().permitAll()
-                );
-
-//                (HttpMethod.GET, "/api/user", "/api/user/{id}", "/api/pothole", "/api/pothole/{id}").permitAll()
-//                        .requestMatchers(HttpMethod.POST, "/api/user/login", "/api/user", "/api/pothole", "/api/feedback").permitAll()
-//                        .anyRequest().authenticated()
-
 
         return http.build();
     }
