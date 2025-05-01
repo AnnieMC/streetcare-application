@@ -2,58 +2,63 @@
 import { ref } from 'vue'
 import { createUser } from '@/services/authService'
 
+//Form data for registration
 const form = ref({
   name: '',
   email: '',
   password: '',
 })
 
-const error = ref('')
-const success = ref('')
+const error = ref('') //Error message to display on failed registration
+const success = ref('') //Success message on successful registration
 
+//Registration function
 const handleRegister = async () => {
   error.value = ''
   success.value = ''
   try {
-    await createUser(form.value)
+    await createUser(form.value) //Call the createUser function from authService
+    //If registration is successful,
     success.value = 'Account created successfully!'
-    form.value = { name: '', email: '', password: '' }
+    form.value = { name: '', email: '', password: '' } //Reset the form
   } catch (err) {
-    // error.value = 'Registration failed. Please try again.'
     // console.error(err)
     if (err.response && err.response.data) {
       const serverErrors = err.response.data
-      // If it's a string (like "Server Error: ...")
       if (typeof serverErrors === 'string') {
+        //Check if the server returns an error message as a string
         error.value = serverErrors
-      }
-      // If it's an object with field errors
-      else if (typeof serverErrors === 'object') {
+      } else if (typeof serverErrors === 'object') {
+        //Check if the server returns error message as an object
         error.value = Object.values(serverErrors).join(', ')
       }
     } else {
-      error.value = 'Registration failed. Please try again.'
+      error.value = 'Registration failed. Please try again.' //Display fallback error message for any other issues
     }
-    //console.error(err)
+    console.error(err)
   }
 }
 </script>
 
 <template>
+  <!-- Registration page -->
   <div class="register-container">
     <h2>Create Account</h2>
 
+    <!-- Registration form -->
     <form @submit.prevent="handleRegister" class="register-form">
       <div class="form-group">
         <label class="visually-hidden">Name</label>
         <input v-model="form.name" type="text" placeholder="Name" required />
       </div>
 
+      <!-- Email input -->
       <div class="form-group">
         <label class="visually-hidden">Email</label>
         <input v-model="form.email" type="email" placeholder="Email" required />
       </div>
 
+      <!-- Password input -->
       <div class="form-group">
         <label class="visually-hidden">Password</label>
         <input v-model="form.password" type="password" placeholder="Password" required />
@@ -61,10 +66,12 @@ const handleRegister = async () => {
 
       <button type="submit">Register</button>
 
+      <!-- Error and success messages -->
       <p v-if="error" class="error-message">{{ error }}</p>
       <p v-if="success" class="success-message">{{ success }}</p>
     </form>
 
+    <!-- Link to login page -->
     <div class="login-link">
       <p>
         Already have an account?

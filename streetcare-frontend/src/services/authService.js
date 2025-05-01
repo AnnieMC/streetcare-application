@@ -1,7 +1,8 @@
 import axios from 'axios'
 
-const API_BASE_URL = 'http://localhost:8080/api'
+const API_BASE_URL = 'http://localhost:8080/api' //API base URL
 
+//Axios instance for making API requests
 export const api = axios.create({
   baseURL: API_BASE_URL,
   headers: {
@@ -9,10 +10,10 @@ export const api = axios.create({
   },
 })
 
-// Fetch all users
+//Get all users
 export const fetchUsers = async () => {
   try {
-    const response = await api.get('/user')
+    const response = await api.get('/user') //Fetch all users from the server
     return response.data
   } catch (error) {
     console.error('Error fetching users:', error)
@@ -23,7 +24,7 @@ export const fetchUsers = async () => {
 // Register user
 export const createUser = async (userData) => {
   try {
-    const response = await api.post('/user', userData)
+    const response = await api.post('/user', userData) //Register a new user by sending data to the server
     return response.data
   } catch (error) {
     console.error('Error creating user:', error)
@@ -34,10 +35,10 @@ export const createUser = async (userData) => {
 // Log in user
 export const loginUser = async (credentials) => {
   try {
-    const response = await api.post('/user/login', credentials)
+    const response = await api.post('/user/login', credentials) //Send login credentials to the server
     console.log('Login response:', response)
     if (response.data) {
-      // Save user to localStorage
+      // Save authenticated user data to localStorage
       localStorage.setItem('user', JSON.stringify(response.data))
       console.log('User saved to localStorage:', JSON.stringify(response.data))
 
@@ -45,15 +46,14 @@ export const loginUser = async (credentials) => {
       const userFromStorage = localStorage.getItem('user')
       console.log('User from localStorage immediately after save:', userFromStorage)
 
-      // Also check if JSON.parse works properly
       try {
         const parsedUser = JSON.parse(userFromStorage)
-        console.log('Parsed user:', parsedUser)
+        console.log('Parsed user:', parsedUser) //Check if JSON.parse works properly
       } catch (error) {
         console.error('Error parsing user data:', error)
       }
     }
-    return response.data
+    return response.data //Return the response data
   } catch (error) {
     console.error('Error logging in:', error)
     throw error
@@ -62,25 +62,15 @@ export const loginUser = async (credentials) => {
 
 //get current user
 export function getCurrentUser() {
-  const userJson = localStorage.getItem('user')
+  const userJson = localStorage.getItem('user') //Get user from localStorage
   if (!userJson) return null
 
   try {
     const parsed = JSON.parse(userJson)
-    console.log('Parsed user in getCurrentUser:', parsed)
+    console.log('Parsed user in getCurrentUser:', parsed) //Check if JSON.parse works properly
     return parsed
   } catch (err) {
     console.error('Error parsing user from localStorage:', err)
     return null
   }
 }
-// Log out user
-// export const logoutUser = async () => {
-//   try {
-//     const response = await api.post('/logout')
-//     return response.data
-//   } catch (error) {
-//     console.error('Error logging out:', error)
-//     throw error
-//   }
-// }
