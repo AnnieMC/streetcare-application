@@ -106,7 +106,6 @@ communication via Axios.
 |
 |
 |
----
 ## Final Notes
 - Ensure ports used by the backend (typically 8080) and frontend
 (typically 5173) are free and not blocked by firewall or other
