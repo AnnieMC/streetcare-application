@@ -99,7 +99,6 @@ communication via Axios.
 | Component | Tool/Runtime | Version |
 |-------------|-------------------|--------------------|
 | Backend | Java JDK | 21 | | Spring Boot | 3.4.3 | | Maven | Latest | | MySQL | 8.0+ | Frontend | Node.js | 18+ | | npm | Bundled with Node | Development | IntelliJ IDEA | (Backend) | | Visual Studio C | (Frontend) |
-|
 
 ## Final Notes
 - Ensure ports used by the backend (typically 8080) and frontend
